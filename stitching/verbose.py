@@ -2,12 +2,14 @@ import os
 
 import cv2 as cv
 
+from .helper_functions import create_list_if_none
 from .images import Images
 from .seam_finder import SeamFinder
 from .timelapser import Timelapser
 
 
-def verbose_stitching(stitcher, images, feature_masks=[], verbose_dir=None):
+def verbose_stitching(stitcher, images, feature_masks=None, verbose_dir=None):
+    feature_masks = create_list_if_none(feature_masks)
     _dir = "." if verbose_dir is None else verbose_dir
 
     with open(verbose_output(_dir, "00_stitcher.txt"), "w") as file:

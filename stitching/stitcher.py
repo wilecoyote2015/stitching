@@ -8,6 +8,7 @@ from .cropper import Cropper
 from .exposure_error_compensator import ExposureErrorCompensator
 from .feature_detector import FeatureDetector
 from .feature_matcher import FeatureMatcher
+from .helper_functions import create_list_if_none
 from .images import Images
 from .seam_finder import SeamFinder
 from .stitching_error import StitchingError
@@ -15,6 +16,7 @@ from .subsetter import Subsetter
 from .timelapser import Timelapser
 from .verbose import verbose_stitching
 from .warper import Warper
+
 
 
 class Stitcher:
@@ -87,10 +89,13 @@ class Stitcher:
         self.blender = Blender(args.blender_type, args.blend_strength)
         self.timelapser = Timelapser(args.timelapse, args.timelapse_prefix)
 
-    def stitch_verbose(self, images, feature_masks=[], verbose_dir=None):
+    def stitch_verbose(self, images, feature_masks=None, verbose_dir=None):
+
         return verbose_stitching(self, images, feature_masks, verbose_dir)
 
-    def stitch(self, images, feature_masks=[]):
+    def stitch(self, images, feature_masks=None):
+        feature_masks = create_list_if_none(feature_masks)
+
         self.images = Images.of(
             images, self.medium_megapix, self.low_megapix, self.final_megapix
         )
@@ -129,7 +134,9 @@ class Stitcher:
     def resize_medium_resolution(self):
         return list(self.images.resize(Images.Resolution.MEDIUM))
 
-    def find_features(self, imgs, feature_masks=[]):
+    def find_features(self, imgs, feature_masks=None):
+        feature_masks = create_list_if_none(feature_masks)
+
         if len(feature_masks) == 0:
             return self.detector.detect(imgs)
         else:
